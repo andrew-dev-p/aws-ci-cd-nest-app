@@ -1,0 +1,51 @@
+name: Deploy to Dev
+
+on:
+  push:
+    branches:
+      - dev     
+
+  workflow_dispatch:    
+    inputs:
+      deploy:
+        description: 'Deploy to Dev environment'
+        required: true
+        default: 'yes'
+
+jobs:
+  deploy-dev:
+    runs-on: [self-hosted, dev]   
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        
+      - name: Set up AWS CLI
+        run: |
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws configure set default.region ${{ secrets.AWS_REGION }}
+        
+      - name: Login to Amazon ECR (if using ECR)
+        run: |
+          aws ecr get-login-password | docker login --username AWS --password-stdin 765064162180.dkr.ecr.us-east-1.amazonaws.com
+
+      - name: Set up Environment Variables
+        run: |
+          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" > .env
+
+      - name: Install Docker and Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker.io
+          sudo apt-get install -y docker-compose
+
+      - name: Run Docker Compose for Dev
+        run: |
+          docker-compose down --remove-orphans   
+          docker-compose pull                     
+          docker-compose up -d --build            
+
+      - name: Verify the deployment
+        run: |
+          curl -f http://localhost:3000/
