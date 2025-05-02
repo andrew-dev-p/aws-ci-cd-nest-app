@@ -1,0 +1,20 @@
+services:
+  app:
+    image: 765064162180.dkr.ecr.us-east-1.amazonaws.com/nest-app:latest
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@db:5432/mydb
+    command: sh -c "npx prisma migrate deploy && npm run seed && node dist/src/main.js"
+    ports:
+      - '3000:3000'
+
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: mydb
+    ports:
+      - '5432:5432'
