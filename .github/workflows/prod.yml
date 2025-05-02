@@ -1,9 +1,6 @@
 name: Deploy to Prod
 
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
     inputs:
       deploy:
@@ -15,8 +12,6 @@ jobs:
   deploy-prod:
     runs-on: [self-hosted, prod]
     environment: prod
-    if: ${{ github.event_name == 'workflow_dispatch' }}
-
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
