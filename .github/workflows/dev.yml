@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - dev     
-
   workflow_dispatch:    
     inputs:
       deploy:
@@ -30,6 +29,6 @@ jobs:
 
       - name: Run Docker Compose for Dev
         run: |
-          docker-compose down --remove-orphans
-          docker-compose pull
-          docker-compose up -d --build
+          docker-compose -f docker-compose.dev.yml down --remove-orphans
+          docker-compose -f docker-compose.dev.yml pull
+          docker-compose -f docker-compose.dev.yml up -d --build
