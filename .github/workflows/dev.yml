@@ -21,10 +21,6 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
         
-      - name: Login to Amazon ECR
-        run: |
-          aws ecr get-login-password | docker login --username AWS --password-stdin 765064162180.dkr.ecr.us-east-1.amazonaws.com
-
       - name: Set up Environment File
         run: |
           echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" > .env
