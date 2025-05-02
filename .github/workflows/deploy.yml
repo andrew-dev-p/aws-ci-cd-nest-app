@@ -35,8 +35,10 @@ jobs:
           echo "POSTGRES_DB=${{ secrets.POSTGRES_DB }}" >> .env
           echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
 
-      - name: Run Docker Compose
+      - name: Run Docker Compose WITH BUILD CACHE
         run: |
           docker-compose -f ${{ inputs.docker_compose_file }} down --remove-orphans
           docker-compose -f ${{ inputs.docker_compose_file }} pull
-          docker-compose -f ${{ inputs.docker_compose_file }} up -d --build
+          DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 \
+          docker-compose -f ${{ inputs.docker_compose_file }} build --progress=plain
+          docker-compose -f ${{ inputs.docker_compose_file }} up -d
