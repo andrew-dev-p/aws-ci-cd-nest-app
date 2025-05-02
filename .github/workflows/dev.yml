@@ -1,0 +1,35 @@
+name: Deploy to Dev
+
+on:
+  push:
+    branches:
+      - dev     
+
+  workflow_dispatch:    
+    inputs:
+      deploy:
+        description: 'Deploy to Dev environment'
+        required: true
+        default: 'yes'
+
+jobs:
+  deploy-dev:
+    runs-on: [self-hosted, dev]   
+    environment: dev
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        
+      - name: Set up Environment File
+        run: |
+          echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}" >> .env
+          echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env
+          echo "POSTGRES_DB=${{ secrets.POSTGRES_DB }}" >> .env
+          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
+
+      - name: Run Docker Compose for Dev
+        run: |
+          docker-compose down --remove-orphans
+          docker-compose pull
+          docker-compose up -d --build
