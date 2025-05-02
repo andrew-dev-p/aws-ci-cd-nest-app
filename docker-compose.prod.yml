@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  app:
+    image: 765064162180.dkr.ecr.us-east-1.amazonaws.com/nest-app:latest
+    env_file:
+      - .env
+    ports:
+      - '3000:3000'
+    command: sh -c "npx prisma migrate deploy && npm run seed && node dist/src/main.js"

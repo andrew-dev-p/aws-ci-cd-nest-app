@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-
   workflow_dispatch:
     inputs:
       deploy:
@@ -30,6 +29,6 @@ jobs:
 
       - name: Run Docker Compose for Prod
         run: |
-          docker-compose down --remove-orphans
-          docker-compose pull
-          docker-compose up -d --build
+          docker-compose -f docker-compose.prod.yml down --remove-orphans
+          docker-compose -f docker-compose.prod.yml pull
+          docker-compose -f docker-compose.prod.yml up -d --build
