@@ -3,8 +3,8 @@ name: Deploy to Dev
 on:
   push:
     branches:
-      - dev     
-  workflow_dispatch:    
+      - dev
+  workflow_dispatch:
     inputs:
       deploy:
         description: 'Deploy to Dev environment'
@@ -13,22 +13,8 @@ on:
 
 jobs:
   deploy-dev:
-    runs-on: [self-hosted, dev]   
-    environment: dev
-    
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-        
-      - name: Set up Environment File
-        run: |
-          echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}" >> .env
-          echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env
-          echo "POSTGRES_DB=${{ secrets.POSTGRES_DB }}" >> .env
-          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
-
-      - name: Run Docker Compose for Dev
-        run: |
-          docker-compose -f docker-compose.dev.yml down --remove-orphans
-          docker-compose -f docker-compose.dev.yml pull
-          docker-compose -f docker-compose.dev.yml up -d --build
+    uses: ./.github/workflows/deploy.yml
+    with:
+      environment: dev
+      docker_compose_file: docker-compose.dev.yml
+    secrets: inherit
